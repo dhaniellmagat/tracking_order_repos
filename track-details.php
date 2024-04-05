@@ -107,7 +107,76 @@ include "page-includes/navbar.php";
                         </div>
                     </div>
                 </div>
+                <?php
+                // Check if the 'id' parameter is set in the URL
+                if (isset($_GET['id'])) {
+                    // API URL to fetch order details for the specific ID
+                    $apiUrl = 'https://orderingapisample.000webhostapp.com/config/order_api.php?id=' . $_GET['id'];
 
+                    // Fetch data from the API
+                    $data = file_get_contents($apiUrl);
+
+                    // Check if data was fetched successfully
+                    if ($data === false) {
+                        // Handle error
+                        echo "Failed to fetch data from the API.";
+                    } else {
+                        // Convert JSON data to PHP array
+                        $orderDetails = json_decode($data, true);
+
+                        // Check if JSON decoding was successful
+                        if ($orderDetails === null) {
+                            // Handle JSON decoding error
+                            echo "Failed to decode JSON data.";
+                        } else {
+                            // Display order details
+                            foreach ($orderDetails as $orderId => $order) {
+                                // Check if the current order's ID matches the provided ID
+                                if ($order['orderInfo']['OrderID'] == $_GET['id']) {
+                ?>
+                                    <div class="container-fluid p-3 mb-2 border">
+                                        <div class="container-fluid mb-2 d-flex justify-content-between align-items-end">
+                                            <h6>Order Information</h6>
+                                           
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="tr-title">Order Date:</td>
+                                                        <td><?= date('m/d/Y H:i', strtotime($order['orderInfo']['OrderDate'])) ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tr-title">Order Number:</td>
+                                                        <td><?= 'ORN' . $order['orderInfo']['OrderID'] ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tr-title">Order Items:</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#seeOrderItemsModal_<?= $order['orderInfo']['OrderID'] ?>">
+                                                                View Order Items
+                                                            </button>
+                                                            <?php include 'modals/seeOrderItemsModal.php'; ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tr-title">Total Amount of Order:</td>
+                                                        <td>₱<?= number_format($totalAmount, 2) ?></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                <?php
+                                    break; // Exit the loop after displaying the order details
+                                }
+                            } // end of foreach loop
+                        } // end of else (JSON decoding)
+                    } // end of else (data fetched from API)
+                } else {
+                    echo "Order ID is not provided.";
+                } ?>
     </div>
 <?php
             }
