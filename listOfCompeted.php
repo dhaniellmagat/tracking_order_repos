@@ -12,7 +12,7 @@ function sanitizeInput($input)
 // Fetch data from database
 $sql_FetchTracks = "SELECT tti.*, ts.Status 
                     FROM tbl_trackinginformation tti
-                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID";
+                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID WHERE tti.TrackingStatusID >= 4";
 $result = mysqli_query($conn, $sql_FetchTracks);
 ?>
 
@@ -43,7 +43,7 @@ $result = mysqli_query($conn, $sql_FetchTracks);
                         <th>Date & Time</th>
                         <th>Tracking Number</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -66,11 +66,11 @@ $result = mysqli_query($conn, $sql_FetchTracks);
                                 <td><?= date('m/d/Y H:i', strtotime($row['InitialDate'])) ?></td>
                                 <td><?= $row['TrackingNumber'] ?></td>
                                 <td><?= $row['Status'] ?></td>
-                                <td><a type="button" href="track-details.php?id=<?= $row['TrackingID'] ?>" class="btn btn-info text-white">View</a></td>
+                                
                             </tr>
                     <?php }
                     } else {
-                        echo "<tr><td colspan='5' class='text-center'>No tracking information found.</td></tr>";
+                        echo "<tr><td colspan='4' class='text-center'>No tracking information found.</td></tr>";
                     } ?>
                 </tbody>
             </table>

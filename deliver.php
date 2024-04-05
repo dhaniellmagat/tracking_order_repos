@@ -12,12 +12,18 @@ function sanitizeInput($input)
 // Fetch data from database
 $sql_FetchTracks = "SELECT tti.*, ts.Status 
                     FROM tbl_trackinginformation tti
-                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID";
+                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID WHERE tti.TrackingStatusID = 4";
 $result = mysqli_query($conn, $sql_FetchTracks);
 ?>
 
 <!-- Page content -->
 <div class="main">
+    <?php if (isset($_SESSION['ActivateAlert'])) { ?>
+        <div class="alert <?= $_SESSION['AlertColor'] ?> fade show" role="alert">
+            <?= $_SESSION['AlertMsg'] ?>
+
+        </div>
+    <?php } ?>
     <div class="container-fluid bg-light p-3 border">
         <h3 class="text-center">Tracking System</h3>
         <div class="row d-flex justify-content-center">
@@ -66,11 +72,17 @@ $result = mysqli_query($conn, $sql_FetchTracks);
                                 <td><?= date('m/d/Y H:i', strtotime($row['InitialDate'])) ?></td>
                                 <td><?= $row['TrackingNumber'] ?></td>
                                 <td><?= $row['Status'] ?></td>
-                                <td><a type="button" href="track-details.php?id=<?= $row['TrackingID'] ?>" class="btn btn-info text-white">View</a></td>
+                                <td>
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#deliverModal_<?= $row['TrackingID'] ?>">
+                                        Update Status
+                                    </button>
+                                    <?php include 'modals/deliverModal.php'; ?>
+                                </td>
+
                             </tr>
                     <?php }
                     } else {
-                        echo "<tr><td colspan='5' class='text-center'>No tracking information found.</td></tr>";
+                        echo "<tr><td colspan='5' class='text-center'>No out for delivery found.</td></tr>";
                     } ?>
                 </tbody>
             </table>
@@ -78,6 +90,8 @@ $result = mysqli_query($conn, $sql_FetchTracks);
     </div>
 
 </div>
+
+
 
 <?php
 include "template/footer.php";
