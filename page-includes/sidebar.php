@@ -23,7 +23,7 @@
         <a href="deliver.php">Deliver</a>
       </li>
       <li>
-        <a href="listOfCompeted.php">Completed</a>
+        <a href="listOfCompleted.php">Completed</a>
       </li>
     </ul>
   </div>
