@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" id="seeOrderItemsModal" tabindex="-1" aria-labelledby="seeOrderItemsModalLabel" aria-hidden="true">
+<div class="modal fade" id="seeOrderItemsModal_<?= $order['orderInfo']['OrderID'] ?>" tabindex="-1" aria-labelledby="seeOrderItemsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -20,20 +20,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Nova</td>
-                                <td>12</td>
-                                <td>2</td>
-                                <td>24</td>
-                            </tr>
+                            <?php
+                            $totalAmount = 0;
+                            foreach ($order['orderInfo']['OrderItems'] as $index => $orderItem) {
+                                $subtotal = $orderItem['ProductPrice'] * $orderItem['Qty'];
+                                $totalAmount += $subtotal;
+                            ?>
+                                <tr>
+                                    <td><?= $index + 1 ?></td>
+                                    <td><?= $orderItem['ProductName'] ?></td>
+                                    <td>₱<?= number_format($orderItem['ProductPrice'], 2) ?></td>
+                                    <td><?= $orderItem['Qty'] ?></td>
+                                    <td>₱ <?= number_format($subtotal, 2) ?></td>
+                                </tr>
+                            <?php } ?>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                
             </div>
         </div>
     </div>

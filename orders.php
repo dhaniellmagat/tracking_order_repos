@@ -35,14 +35,30 @@ include "page-includes/navbar.php";
                     </tr>
                 </thead>
                 <tbody>
-                
-                            <tr>
-                                <td>1</td>
-                                <td>11/11/11</td>
-                                <td>OR01</td>
-                                <td><a type="button" href="order-details.php" class="btn btn-info text-white">View</a></td>
-                            </tr>
-                   
+                    <?php
+                    $RowCount = 0;
+                    try {
+                        require_once 'config/fetch_order_api.php';
+
+                        // Check if data was fetched successfully
+                        if ($dataArray === false) {
+                            throw new Exception("Failed to fetch data from the API.");
+                        } else {
+                            // Loop through each order
+                            foreach ($dataArray as $orderId => $orderInfo) {
+                    ?>
+                                <tr>
+                                    <td><?= ++$RowCount ?></td>
+                                    <td><?= date('m/d/Y H:i', strtotime($orderInfo['orderInfo']['OrderDate'])) ?></td>
+                                    <td><?= 'ORN' .$orderInfo['orderInfo']['OrderID'] ?></td>
+                                    <td><a type="button" href="order-details.php?id=<?= $orderInfo['orderInfo']['OrderID'] ?>" class="btn btn-info text-white">View</a></td>
+                                </tr>
+                    <?php }
+                        }
+                    } catch (Exception $e) {
+                        echo '<tr><td colspan="4">' . $e->getMessage() . '</td></tr>';
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>

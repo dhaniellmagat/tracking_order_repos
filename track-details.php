@@ -15,12 +15,14 @@ include "page-includes/navbar.php";
 
         <?php
         $keyID = $_GET['id'];
-        $sql_DisplayTracks = "SELECT tti.*, ts.Status, pl_current.PostName AS CurrentPostName, pl_destination.PostName AS DestinationPostName
-        FROM tbl_trackinginformation tti
-        INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID
-        INNER JOIN tbl_postlocations pl_current ON tti.PostLocationID = pl_current.PostLocationID
-        INNER JOIN tbl_postlocations pl_destination ON tti.DestinationPostID = pl_destination.PostLocationID
-        WHERE tti.TrackingID = $keyID";
+        $sql_DisplayTracks = "SELECT tti.*, ts.Status, pl_current.PostName AS CurrentPostName, 
+                            CASE WHEN tti.DestinationPostID IS NOT NULL THEN pl_destination.PostName ELSE 'N/A' END AS DestinationPostName
+                    FROM tbl_trackinginformation tti
+                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID
+                    INNER JOIN tbl_postlocations pl_current ON tti.PostLocationID = pl_current.PostLocationID
+                    LEFT JOIN tbl_postlocations pl_destination ON tti.DestinationPostID = pl_destination.PostLocationID
+                    WHERE tti.TrackingID = $keyID";
+
         $result = mysqli_query($conn, $sql_DisplayTracks);
 
         if (mysqli_num_rows($result) > 0) {
@@ -42,7 +44,7 @@ include "page-includes/navbar.php";
                                 <td class="tr-title">Tracking Number:</td>
                                 <td><?= $row['TrackingNumber'] ?></td>
                             </tr>
-                            
+
                             <tr>
                                 <td class="tr-title">Initial Tracking Date:</td>
                                 <td><?= date('m/d/Y H:i', strtotime($row['InitialDate'])) ?></td>
@@ -107,53 +109,13 @@ include "page-includes/navbar.php";
                 </div>
 
     </div>
-<?php }
+<?php
+            }
+        } else {
+            echo 'no records found';
         } ?>
 
 
-<div class="container-fluid p-3 mb-2 border">
-    <div class="table-responsive">
-        <h6>Customer Information</h6>
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <td class="tr-title">Customer Name:</td>
-                    <td>Juan Dela Cruz</td>
-                </tr>
-                <tr>
-                    <td class="tr-title">Delivery Address:</td>
-                    <td>Lorem Ipsum</td>
-                </tr>
-                <tr>
-                    <td class="tr-title">Contact Number:</td>
-                    <td>Lorem Ipsum</td>
-                </tr>
-                <tr>
-                    <td class="tr-title">Email Address:</td>
-                    <td>Lorem Ipsum</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="container-fluid p-3 mb-2 border">
-    <div class="table-responsive">
-        <h6>Order Information</h6>
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <td class="tr-title">Order Number:</td>
-                    <td>Lorem Ipsum</td>
-                </tr>
-                <tr>
-                    <td class="tr-title">Order Total:</td>
-                    <td>Lorem Ipsum</td>
-                </tr>
-
-            </tbody>
-        </table>
-    </div>
-</div>
 
 </div>
 

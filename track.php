@@ -53,7 +53,8 @@ $result = mysqli_query($conn, $sql_FetchTracks);
                         // Search logic
                         $search = sanitizeInput($_GET['search']);
                         $sql_FetchTracks .= " WHERE tti.TrackingNumber LIKE '%$search%'
-                                            OR ts.Status LIKE '%$search%' "; // Add more columns as needed
+                                            OR ts.Status LIKE '%$search%'
+                                            OR tti.InitialDate LIKE '%$search%' "; // Add more columns as needed
                     }
                     $result = mysqli_query($conn, $sql_FetchTracks);
 
