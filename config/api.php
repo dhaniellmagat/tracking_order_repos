@@ -5,11 +5,11 @@ header("Access-Control-Allow-Headers: Content-Type");
 header('Content-Type: application/json');
 include 'dbcon.php';
 
-$sql = "SELECT ti.*, ts.Status, pl.PostName AS PostLocationName, dp.PostName AS DestinationPostName
+$sql = "SELECT ti.*, ts.Status, pl.PostName AS PostLocationName, IFNULL(dp.PostName, 'N/A') AS DestinationPostName
         FROM `tbl_trackinginformation` ti
         INNER JOIN `tbl_trackingstatus` ts ON ti.`TrackingStatusID` = ts.`TrackingStatusID`
         INNER JOIN `tbl_postlocations` pl ON ti.`PostLocationID` = pl.`postLocationID`
-        INNER JOIN `tbl_postlocations` dp ON ti.`DestinationPostID` = dp.`postLocationID`";
+        LEFT JOIN `tbl_postlocations` dp ON ti.`DestinationPostID` = dp.`postLocationID`";
 
 $result = $conn->query($sql);
 $trackingInformations = [];
@@ -33,3 +33,4 @@ while ($row = $result->fetch_assoc()) {
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     echo json_encode($trackingInformations);
 }
+?>

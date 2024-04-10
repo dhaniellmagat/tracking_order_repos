@@ -9,7 +9,7 @@ include "page-includes/navbar.php";
 <div class="main">
     <div class="container-fluid bg-light p-3 border">
         <h3 class="text-center">Ordering System</h3>
-       
+
     </div>
     <br>
     <div class="container-fluid bg-light p-3 border">
@@ -22,6 +22,7 @@ include "page-includes/navbar.php";
                         <th>#</th>
                         <th>Date & Time</th>
                         <th>Order Number</th>
+                        <th>Order Tracking Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -37,11 +38,26 @@ include "page-includes/navbar.php";
                         } else {
                             // Loop through each order
                             foreach ($dataArray as $orderId => $orderInfo) {
+                                $APIorderID = $orderInfo['orderInfo']['OrderID'];
+                                $sql_LookOrderNum = "SELECT OrderID FROM tbl_trackinginformation  WHERE OrderID = $APIorderID";
+                                $result = mysqli_query($conn, $sql_LookOrderNum);
+                                $trackingInfo = mysqli_fetch_assoc($result);
+
+                                // Display tracking status
+                                if ($trackingInfo) {
+                                    $trackingStatus = 'Tracked';
+                                } else {
+                                    $trackingStatus = "Untracked";
+                                }
+
                     ?>
                                 <tr>
                                     <td><?= ++$RowCount ?></td>
                                     <td><?= date('m/d/Y H:i', strtotime($orderInfo['orderInfo']['OrderDate'])) ?></td>
-                                    <td><?= 'ORN' .$orderInfo['orderInfo']['OrderID'] ?></td>
+                                    <td><?= 'ORN' . $orderInfo['orderInfo']['OrderID'] ?></td>
+                                    <td>
+                                        <?= $trackingStatus ?>
+                                    </td>
                                     <td><a type="button" href="order-details.php?id=<?= $orderInfo['orderInfo']['OrderID'] ?>" class="btn btn-info text-white">View</a></td>
                                 </tr>
                     <?php }
