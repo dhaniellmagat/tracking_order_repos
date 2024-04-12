@@ -111,7 +111,7 @@ include "page-includes/navbar.php";
                 // Check if the 'id' parameter is set in the URL
                 if (isset($_GET['id'])) {
                     // API URL to fetch order details for the specific ID
-                    $apiUrl = 'https://orderingapisample.000webhostapp.com/config/order_api.php?id=' . $_GET['id'];
+                    $apiUrl = 'http://localhost/tracking_order/config/ralfh_api.php?id=' . $_GET['id'];
 
                     // Fetch data from the API
                     $data = file_get_contents($apiUrl);
@@ -132,7 +132,7 @@ include "page-includes/navbar.php";
                             // Display order details
                             foreach ($orderDetails as $orderId => $order) {
                                 // Check if the current order's ID matches the provided ID
-                                if ($order['orderInfo']['OrderID'] == $_GET['id']) {
+                                if ($order['order_id'] == $_GET['id']) {
                 ?>
                                     <div class="container-fluid p-3 mb-2 border">
                                         <div class="container-fluid mb-2 d-flex justify-content-between align-items-end">
@@ -144,16 +144,16 @@ include "page-includes/navbar.php";
                                                 <tbody>
                                                     <tr>
                                                         <td class="tr-title">Order Date:</td>
-                                                        <td><?= date('m/d/Y H:i', strtotime($order['orderInfo']['OrderDate'])) ?></td>
+                                                        <td><?= date('m/d/Y H:i', strtotime($order['order_date'])) ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="tr-title">Order Number:</td>
-                                                        <td><?= 'ORN' . $order['orderInfo']['OrderID'] ?></td>
+                                                        <td><?= 'ORN' . $order['order_id'] ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="tr-title">Order Items:</td>
                                                         <td>
-                                                            <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#seeOrderItemsModal_<?= $order['orderInfo']['OrderID'] ?>">
+                                                            <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#seeOrderItemsModal_<?= $order['order_id'] ?>">
                                                                 View Order Items
                                                             </button>
                                                             <?php include 'modals/seeOrderItemsModal.php'; ?>

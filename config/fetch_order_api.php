@@ -1,6 +1,6 @@
 <?php
 // API URL
-$apiUrl = 'https://orderingapisample.000webhostapp.com/config/order_api.php';
+$apiUrl = 'http://localhost/tracking_order/config/ralfh_api.php';
 
 // Fetch data from the API
 $data = file_get_contents($apiUrl);

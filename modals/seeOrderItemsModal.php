@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" id="seeOrderItemsModal_<?= $order['orderInfo']['OrderID'] ?>" tabindex="-1" aria-labelledby="seeOrderItemsModalLabel" aria-hidden="true">
+<div class="modal fade" id="seeOrderItemsModal_<?= $order['order_id'] ?>" tabindex="-1" aria-labelledby="seeOrderItemsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -22,15 +22,15 @@
                         <tbody>
                             <?php
                             $totalAmount = 0;
-                            foreach ($order['orderInfo']['OrderItems'] as $index => $orderItem) {
-                                $subtotal = $orderItem['ProductPrice'] * $orderItem['Qty'];
+                            foreach ($order['order_items'] as $index => $orderItem) {
+                                $subtotal = $orderItem['product']['price'] * $orderItem['quantity_ordered'];
                                 $totalAmount += $subtotal;
                             ?>
                                 <tr>
                                     <td><?= $index + 1 ?></td>
-                                    <td><?= $orderItem['ProductName'] ?></td>
-                                    <td>₱<?= number_format($orderItem['ProductPrice'], 2) ?></td>
-                                    <td><?= $orderItem['Qty'] ?></td>
+                                    <td><?= $orderItem['product']['name'] ?></td>
+                                    <td>₱<?= number_format($orderItem['product']['price'], 2) ?></td>
+                                    <td><?= $orderItem['quantity_ordered'] ?></td>
                                     <td>₱ <?= number_format($subtotal, 2) ?></td>
                                 </tr>
                             <?php } ?>
