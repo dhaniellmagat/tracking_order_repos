@@ -14,6 +14,8 @@ include 'customer-template/navbar.php';
     <div class="container col-lg-12 col-sm-12">
         <div class="table-responsive">
             <?php
+            $current_user_id = $_SESSION['user_info']['id'];
+            
             $table_query = "SELECT DISTINCT
             orders.order_id AS order_id,
             orders.order_date AS order_date,
@@ -24,10 +26,12 @@ include 'customer-template/navbar.php';
             tbl_trackinginformation ON orders.order_id = tbl_trackinginformation.OrderID
         LEFT JOIN 
             tbl_trackingstatus ON tbl_trackinginformation.TrackingStatusID = tbl_trackingstatus.TrackingStatusID 
+        WHERE 
+            orders.customer_id = $current_user_id
         GROUP BY 
             orders.order_id
         ORDER BY 
-            order_date DESC;
+            order_date DESC
         ";
 
             $result = $conn->query($table_query);

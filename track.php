@@ -11,8 +11,9 @@ function sanitizeInput($input)
 
 // Fetch data from database
 $sql_FetchTracks = "SELECT tti.*, ts.Status 
-                    FROM tbl_trackinginformation tti
-                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID";
+FROM tbl_trackinginformation tti
+INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID 
+ORDER BY tti.InitialDate DESC";
 $result = mysqli_query($conn, $sql_FetchTracks);
 ?>
 

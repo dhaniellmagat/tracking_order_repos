@@ -10,9 +10,12 @@ function sanitizeInput($input)
 }
 
 // Fetch data from database
-$sql_FetchTracks = "SELECT tti.*, ts.Status 
-                    FROM tbl_trackinginformation tti
-                    INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID WHERE tti.TrackingStatusID = 4";
+$sql_FetchTracks = "SELECT tti.*, ts.Status, o.total_amount,o.order_id
+FROM tbl_trackinginformation tti
+INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID
+INNER JOIN orders o ON tti.OrderID = o.order_id
+WHERE tti.TrackingStatusID = 4
+";
 $result = mysqli_query($conn, $sql_FetchTracks);
 ?>
 
@@ -23,7 +26,8 @@ $result = mysqli_query($conn, $sql_FetchTracks);
             <?= $_SESSION['AlertMsg'] ?>
 
         </div>
-    <?php }$_SESSION['AlertMsg'] ?>
+    <?php }
+    unset($_SESSION['AlertMsg']); ?>
     <div class="container-fluid bg-light p-3 border">
         <h3 class="text-center">Tracking System</h3>
         <div class="row d-flex justify-content-center">

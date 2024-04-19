@@ -31,21 +31,12 @@ include 'customer-template/navbar.php';
                     </div>
                 </div>
             </div>
-            <?php
-            // include_once '../config/dbcon.php';
-            // $senderID = $_SESSION['auth_user']['senderID'];
-            // $sql_fetchSenderInfo = "SELECT * FROM tbl_sender WHERE senderID = $senderID";
-            // $result_fetch = $conn->query($sql_fetchSenderInfo);
 
-            // if ($result_fetch->num_rows > 0) {
-            //     $row = $result_fetch->fetch_assoc();
-            //     $fullName = $row['FName'] . ' ' . $row['MName'] . '' . $row['LName'];
-            ?>
             <div class="accordion bg-white shadow p-3 mb-3" id="accordionExample">
 
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        <button class="accordion-button collapsed bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
                             <span class="bg-info rounded-circle px-2 py-1 text-white fw-bold mx-1">1</span> Place Order
                         </button>
                     </h2>
@@ -65,7 +56,16 @@ include 'customer-template/navbar.php';
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-width">
                                         <tbody id="productTable">
-                                            <?php foreach ($products as $row) { ?>
+                                            <?php foreach ($products as $row) {
+                                                $quantityAvailableAfterAddition = 0;
+                                                if (!empty($_SESSION['cart']) && isset($_SESSION['cart'][$row['product_id']])) {
+                                                    // Calculate quantity available after addition
+                                                    $quantityAvailableAfterAddition = max(0, $row['quantity_in_stock'] - $_SESSION['cart'][$row['product_id']]);
+                                                } else {
+                                                    // If cart is empty or product not in cart, set default quantity available
+                                                    $quantityAvailableAfterAddition = $row['quantity_in_stock'];
+                                                }
+                                            ?>
                                                 <tr>
                                                     <td class="table-product text">
                                                         <p><?= $row['name'] ?> </p>
@@ -77,7 +77,7 @@ include 'customer-template/navbar.php';
                                                     </td>
                                                     <td>
                                                         <?php if ($row['quantity_in_stock'] > 0) { ?>
-                                                            <button class="btn btn-info add-to-cart-btn" data-product-id="<?= $row['product_id'] ?>">Add Product</button>
+                                                            <button class="btn btn-info add-to-cart-btn" data-quantity-in-stock="<?= $quantityAvailableAfterAddition ?>" data-product-id="<?= $row['product_id'] ?>">Add Product</button>
                                                         <?php } else { ?>
                                                             <button class="btn btn-info" disabled>Out of Stock</button>
                                                         <?php } ?>
@@ -101,27 +101,28 @@ include 'customer-template/navbar.php';
                 </div>
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                            <span class="bg-info rounded-circle px-2 py-1 text-white fw-bold mx-1">2</span>Sender Information
+                        <button class="accordion-button bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            <span class="bg-info rounded-circle px-2 py-1 text-white fw-bold mx-1">2</span>Customer Information
                         </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
+                            <?php if (isset($_SESSION['auth'])) { ?>
+                                <label for="" class="text-capitalize">Customer's Name</label>
+                                <input type="text" name="hiddenCustomerId" value="<?= $_SESSION['user_info']['id'];?>">
+                                <input type="text" aria-label="Name" required name="customer_name" readonly value="<?= $_SESSION['user_info']['name'];?>" placeholder="Enter your full name" class="form-control">
 
-                            <label for="" class="text-capitalize">Customer's Name</label>
-                            <input type="text" aria-label="Name" name="customer_name" placeholder="Enter your full name" class="form-control">
+                                <label for="" class="text-capitalize">Customer's Mobile Number</label>
 
-                            <label for="" class="text-capitalize">Customer's Mobile Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="contact-number">+63</span>
+                                    <input type="text" class="form-control" readonly required aria-describedby="customer_contact_information" value="<?= $_SESSION['user_info']['contact_information'];?>" name="customer_contact_information">
+                                </div>
 
-                            <div class="input-group">
-                                <span class="input-group-text" id="contact-number">+63</span>
-                                <input type="text" class="form-control"  aria-describedby="customer_contact_information" name="customer_contact_information">
-                            </div>
-
-                            <label for="" class="text-capitalize">customer address</label>
-                            <input type="text" class="form-control" name="customer_address" value="" placeholder="Enter your address">
-                            <p style="font-size: small; margin:0px;" class="text-center">Note: Your address will be the pick-up address</p>
-
+                                <label for="" class="text-capitalize">customer address</label>
+                                <input type="text" class="form-control" require name="customer_address" readonly value="<?= $_SESSION['user_info']['address'];?>" placeholder="Enter your address">
+                                <p style="font-size: small; margin:0px;" class="text-center">Note: Your address will be the pick-up address</p>
+                            <?php } ?>
 
                         </div>
                     </div>
@@ -140,7 +141,7 @@ include 'customer-template/navbar.php';
                                 <td>Products</td>
                                 <td>Qty</td>
                                 <td>Price</td>
-                                <td>Action</td>
+                                <td style="width: 250px;">Action</td>
                             </tr>
 
                             <?php
@@ -162,17 +163,31 @@ include 'customer-template/navbar.php';
                                         <td><?= $quantity ?></td>
                                         <td><?= '₱ ' . $product_details['price'] ?></td>
                                         <td>
-                                            <button class="btn btn-danger remove-from-cart-btn" data-product-id="<?= $product_id ?>">Remove</button>
+                                            <button class="btn btn-danger remove-from-cart-btn" data-product-id="<?= $product_id ?>" type="button">Remove </button>
+                                            <script src="customer-assets/js/remove_to_cart.js"></script>
                                         </td>
                                     </tr>
-                            <?php
+                                <?php
                                 }
-                            }
+                            } else { ?>
+                                <tr>
+                                    <td colspan="5" class="text-center">No products on cart. Please select products to add on 'Place Order'</td>
+                                </tr>
+                            <?php  }
 
                             ?>
                             <tr class="fw-bold">
-                                <td class="text-end" colspan="3">Total Amount:</td>
+                                <td class="text-end" colspan="4">Total Amount:</td>
                                 <td colspan="2"><?= '₱ ' . $total_amount ?></td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td class="text-end" colspan="4">Select Payment Method</td>
+                                <td>
+                                    <select name="PaymentType" id="" class="form-select">
+                                        <option value="COD">CASH ON DELIVERY</option>
+                                        <option value="GCASH">GCASH</option>
+                                    </select>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -180,11 +195,13 @@ include 'customer-template/navbar.php';
                 <div class="d-flex justify-content-end">
                     <input type="hidden" name="total_amount" value="<?= $total_amount ?>" id="">
                     <input type="hidden" name="order_date" value="<?= $DateNow ?>">
-                    <button class="btn btn-warning <?php if(empty($_SESSION['cart'])){echo "disabled";} ?>" name="btn_place_order" type="submit">Place Order</button>
+                    <button class="btn btn-warning <?php if (empty($_SESSION['cart'])) {
+                                                        echo "disabled";
+                                                    } ?>" name="btn_place_order" type="submit">Place Order</button>
                 </div>
             </div>
 
-            <script src="customer-assets/js/remove_to_cart.js"></script>
+
 
         </form>
     </div>

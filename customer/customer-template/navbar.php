@@ -12,25 +12,27 @@
                     <a class="nav-link <?= $page == 'index.php' ? 'active' : '' ?>" href="index.php">Order</a>
                 </li>
                 <li class="nav-item">
-                        <a class="nav-link <?= $page == 'transaction.php' ? 'active' : '' ?>" href="transaction.php">Transactions</a>
-                    </li>
+                    <a class="nav-link <?= $page == 'transaction.php' ? 'active' : '' ?>" href="transaction.php">Transactions</a>
+                </li>
             </ul>
 
-            <div class="d-flex ml-auto ">
-                <div class="dropdown mx-3">
+            <?php if (isset($_SESSION['auth'])) { ?>
+                <div class="d-flex ml-auto ">
+                    <div class="dropdown mx-3">
 
-                    <a class="nav-link row d-flex align-items-center dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="col px-1"> <span class="fas fa-user-circle fa-2x text-info"></span></div>
-                        <div class="col px-0"><?php //echo $_SESSION['auth_user']['Fullname']; 
-                                                ?> Juan</div>
-                    </a>
+                        <a class="nav-link row d-flex align-items-center dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="col px-1"> <span class="fas fa-user-circle fa-2x text-info"></span></div>
+                            <div class="col px-0"><?= $_SESSION['user_info']['name'];
+                                                    ?> </div>
+                        </a>
 
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#LogoutModal">Logout</a></li>
-                    </ul>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#LogoutModal">Logout</a></li>
+                        </ul>
+                    </div>
+
                 </div>
-
-            </div>
+            <?php } ?>
 
         </div>
     </div>
@@ -43,7 +45,7 @@
         <div class="modal-content">
             <div class="modal-body text-center py-5">
                 <h5>Are you sure to logout?</h5>
-                <a type="button" href="" class="btn btn-success rounded-pill">Yes</a>
+                <a type="button" href="customer-config/logout.php" class="btn btn-success rounded-pill">Yes</a>
                 <button type="button" class="btn btn-danger rounded-pill" data-bs-dismiss="modal" aria-label="Close">No</button>
             </div>
         </div>

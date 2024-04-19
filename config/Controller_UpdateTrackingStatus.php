@@ -23,8 +23,10 @@ if (isset($_POST['btn_updateStatus'])) {
     exit();
 }
 
-if(isset($_POST['btn_deliver'])){
+if (isset($_POST['btn_deliver'])) {
     $KeyID = $_POST['KeyID'];
+    $orderID = $_POST['orderID'];
+    $Amount = $_POST['Amount'];
     $deliverUpdatedStatus = $_POST['deliverUpdatedStatus'];
 
     $sql_DeliverUpdateStatus = "UPDATE tbl_trackinginformation SET TrackingStatusID = $deliverUpdatedStatus WHERE TrackingID = '$KeyID'";
@@ -33,6 +35,18 @@ if(isset($_POST['btn_deliver'])){
         $_SESSION['ActivateAlert'] = true;
         $_SESSION['AlertColor'] = "alert-success";
         $_SESSION['AlertMsg'] = "Status updated successfully!";
+
+        $sql_UpdatePayment = "UPDATE payment_method SET Amount = $Amount WHERE order_id = '$orderID'";
+        $result = $conn->query($sql_UpdatePayment);
+        if ($result === true) {
+            $_SESSION['ActivateAlert'] = true;
+            $_SESSION['AlertColor'] = "alert-success";
+            $_SESSION['AlertMsg'] = "Status updated successfully!";
+        } else {
+            $_SESSION['ActivateAlert'] = true;
+            $_SESSION['AlertColor'] = "alert-danger";
+            $_SESSION['AlertMsg'] = "Status update failed";
+        }
     } else {
         $_SESSION['ActivateAlert'] = true;
         $_SESSION['AlertColor'] = "alert-danger";

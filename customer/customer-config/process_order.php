@@ -5,29 +5,28 @@ include '..\..\config\dbcon.php';
 
 // Check if the form is submitted
 if (isset($_POST['btn_place_order'])) {
-    // Get customer information from the form
-    $customer_name = $_POST['customer_name'];
-    $contact_number = $_POST['customer_contact_information'];
-    $customer_address = $_POST['customer_address'];
+    $hiddenCustomerId = $_POST['hiddenCustomerId'];
+    $customer_address = $_SESSION['user_info']['address'];
+    $customer_name = $_SESSION['user_info']['name'];
     $order_date = $_POST['order_date'];
     $total_amount = $_POST['total_amount'];
 
     // Get the cart items from the session
     $cart = $_SESSION['cart'];
 
-    // Insert customer information into the customers table
-    $sql_customer = "INSERT INTO customers (name, contact_information, address) VALUES (?, ?, ?)";
-    $stmt_customer = $conn->prepare($sql_customer);
-    $stmt_customer->bind_param("sss", $customer_name, $contact_number, $customer_address);
-    $stmt_customer->execute();
+    // // Insert customer information into the customers table
+    // $sql_customer = "INSERT INTO customers (name, contact_information, address) VALUES (?, ?, ?)";
+    // $stmt_customer = $conn->prepare($sql_customer);
+    // $stmt_customer->bind_param("sss", $customer_name, $contact_number, $customer_address);
+    // $stmt_customer->execute();
 
-    // Get the newly inserted customer ID
-    $customer_id = $stmt_customer->insert_id;
+    // // Get the newly inserted customer ID
+    // $customer_id = $stmt_customer->insert_id;
 
     // Insert order details into the orders table
     $sql_order = "INSERT INTO orders (customer_id, order_date,delivery_address,total_amount) VALUES (?, ?, ?, ?)";
     $stmt_order = $conn->prepare($sql_order);
-    $stmt_order->bind_param("isss", $customer_id, $order_date, $customer_address, $total_amount);
+    $stmt_order->bind_param("isss", $hiddenCustomerId, $order_date, $customer_address, $total_amount);
     $stmt_order->execute();
 
     // Get the newly inserted order ID
@@ -38,23 +37,23 @@ if (isset($_POST['btn_place_order'])) {
         // Fetch product details from the database based on $product_id
         $product_details = getProductDetailsById($product_id, $conn);
         $product_price = $product_details['price'];
-        
+
         // Decrement the stock count of the product in the database
         $updated_stock = $product_details['quantity_in_stock'] - $quantity;
-        
+
         // Update the stock count in the products table
         $sql_update_stock = "UPDATE product SET quantity_in_stock = ? WHERE product_id = ?";
         $stmt_update_stock = $conn->prepare($sql_update_stock);
         $stmt_update_stock->bind_param("ii", $updated_stock, $product_id);
         $stmt_update_stock->execute();
-    
+
         // Insert order item details into the order_items table
         $sql_order_item = "INSERT INTO order_item (order_id, product_id, quantity_ordered, price_at_order_time) VALUES (?, ?, ?, ?)";
         $stmt_order_item = $conn->prepare($sql_order_item);
         $stmt_order_item->bind_param("iiii", $order_id, $product_id, $quantity, $product_price);
         $stmt_order_item->execute();
     }
-    
+
 
     // Set session variables for alert
     if ($stmt_order) {
@@ -68,7 +67,7 @@ if (isset($_POST['btn_place_order'])) {
         $TrackingStatusID = 1;
         $PostLocationID = 1;
         $InitialDate = date('Y-m-d H:i:s');
-    
+
         // Insert tracking information
         $sql_EnableTracking = "INSERT INTO tbl_trackinginformation (TrackingNumber, OrderID, TrackingStatusID, PostLocationID, InitialDate) 
                                 VALUES ('$TrackingNumber', $order_id, $TrackingStatusID, $PostLocationID, '$InitialDate')";
@@ -81,6 +80,27 @@ if (isset($_POST['btn_place_order'])) {
             $_SESSION['ActivateAlert'] = true;
             $_SESSION['AlertColor'] = "alert-danger";
             $_SESSION['AlertMsg'] = "Failed to place order.";
+        }
+
+
+        // Insert data into the payment_method table
+        $sql_payment_method = "INSERT INTO payment_method (name, order_id, Amount, Type) VALUES (?,?, ?, ?)";
+        $stmt_payment_method = $conn->prepare($sql_payment_method);
+
+        // Assuming you have a placeholder for the amount and type, you can set them to NULL initially
+        $amount = null; // Set this to the appropriate amount if you have it
+        $type = $_POST['PaymentType']; // Set this to the appropriate type
+
+        $stmt_payment_method->bind_param("sids", $customer_name, $hiddenCustomerId, $amount, $type);
+        $stmt_payment_method->execute();
+
+        // Check if the payment method insertion was successful
+        if ($stmt_payment_method) {
+            // Payment method inserted successfully
+            // You can add additional logic here if needed
+        } else {
+            // Payment method insertion failed
+            // You can handle this situation accordingly
         }
     } else {
         $_SESSION['ActivateAlert'] = true;

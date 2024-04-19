@@ -12,7 +12,8 @@
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <tr>
-                                <input type="text" name="KeyID" value="<?= $row['TrackingID'] ?>">
+                                <input type="hidden" name="KeyID" value="<?= $row['TrackingID'] ?>">
+                                <input type="hidden" name="orderID" value="<?= $row['order_id'] ?>">
                                 <td class="tr-title">Set Status to: </td>
                                 <td>
                                     <select class="form-select" name="deliverUpdatedStatus" aria-label="">
@@ -27,6 +28,14 @@
                                         <?php } ?>
                                     </select>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td>Total Amount:</td>
+                                <td><?= '₱ '. $row['total_amount'] ?></td>
+                            </tr>
+                            <tr>
+                                <td>Amount Paid:</td>
+                                <td><input type="text" class="form-control" placeholder="enter exact amount" name="Amount"></td>
                             </tr>
                             <tr>
                                 <td class="tr-title">
@@ -46,7 +55,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" name="btn_deliver" class="btn btn-primary">Save changes</button>
+                    <button type="submit" name="btn_deliver" class="btn btn-primary">Complete Delivery</button>
                 </div>
             </form>
         </div>
