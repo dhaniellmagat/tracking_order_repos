@@ -22,14 +22,16 @@
                         <tbody>
                             <?php
                             $totalAmount = 0;
-                            foreach ($order['order_items'] as $index => $orderItem) {
-                                $subtotal = $orderItem['product']['price'] * $orderItem['quantity_ordered'];
+                            $index = 1;
+                            mysqli_data_seek($result, 0); // Reset result pointer
+                            while ($orderItem = mysqli_fetch_assoc($result)) {
+                                $subtotal = $orderItem['product_price'] * $orderItem['quantity_ordered'];
                                 $totalAmount += $subtotal;
                             ?>
                                 <tr>
-                                    <td><?= $index + 1 ?></td>
-                                    <td><?= $orderItem['product']['name'] ?></td>
-                                    <td>₱<?= number_format($orderItem['product']['price'], 2) ?></td>
+                                    <td><?= $index++ ?></td>
+                                    <td><?= $orderItem['product_name'] ?></td>
+                                    <td>₱<?= number_format($orderItem['product_price'], 2) ?></td>
                                     <td><?= $orderItem['quantity_ordered'] ?></td>
                                     <td>₱ <?= number_format($subtotal, 2) ?></td>
                                 </tr>
@@ -40,7 +42,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                
+
             </div>
         </div>
     </div>

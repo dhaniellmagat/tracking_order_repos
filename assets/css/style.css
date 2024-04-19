@@ -1,6 +1,9 @@
 body {
     font-family: "Raleway", sans-serif;
 }
+.btn-info{
+    color: white!important;
+}
 
 .raleway-font {
     font-family: "Raleway", sans-serif;

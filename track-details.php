@@ -5,12 +5,12 @@ include "page-includes/navbar.php";
 ?>
 
 <div class="main">
-    <?php if (isset($_SESSION['ActivateAlert'])) { ?>
+    <?php if (isset($_SESSION['AlertMsg'])) { ?>
         <div class="alert <?= $_SESSION['AlertColor'] ?> fade show" role="alert">
             <?= $_SESSION['AlertMsg'] ?>
 
         </div>
-    <?php } ?>
+    <?php }unset($_SESSION['AlertMsg']); ?>
     <div class="container-fluid p-3 mb-2 border">
 
         <?php
@@ -107,76 +107,57 @@ include "page-includes/navbar.php";
                         </div>
                     </div>
                 </div>
-                <?php
-                // Check if the 'id' parameter is set in the URL
-                if (isset($_GET['id'])) {
-                    // API URL to fetch order details for the specific ID
-                    $apiUrl = 'http://localhost/tracking_order/config/ralfh_api.php?id=' . $_GET['id'];
+        <?php }
+        } ?>
 
-                    // Fetch data from the API
-                    $data = file_get_contents($apiUrl);
+        <?php
+        $sql_DisplayOrder = "SELECT oi.*, p.name AS product_name, p.price AS product_price, o.order_date, o.total_amount 
+        FROM order_item oi
+        INNER JOIN product p ON p.product_id = oi.product_id
+        INNER JOIN orders o ON o.order_id = oi.order_id
+        INNER JOIN customers c ON c.customer_id = o.customer_id
+        WHERE o.order_id = $keyID";
+        $result = mysqli_query($conn, $sql_DisplayOrder);
 
-                    // Check if data was fetched successfully
-                    if ($data === false) {
-                        // Handle error
-                        echo "Failed to fetch data from the API.";
-                    } else {
-                        // Convert JSON data to PHP array
-                        $orderDetails = json_decode($data, true);
+        if (mysqli_num_rows($result) > 0) {
+            // Loop through each row of data
+            while ($order = mysqli_fetch_assoc($result)) {
+        ?>
+                <div class="container-fluid p-3 mb-2 border">
+                    <div class="container-fluid mb-2 d-flex justify-content-between align-items-end">
+                        <h6>Order Information</h6>
 
-                        // Check if JSON decoding was successful
-                        if ($orderDetails === null) {
-                            // Handle JSON decoding error
-                            echo "Failed to decode JSON data.";
-                        } else {
-                            // Display order details
-                            foreach ($orderDetails as $orderId => $order) {
-                                // Check if the current order's ID matches the provided ID
-                                if ($order['order_id'] == $_GET['id']) {
-                ?>
-                                    <div class="container-fluid p-3 mb-2 border">
-                                        <div class="container-fluid mb-2 d-flex justify-content-between align-items-end">
-                                            <h6>Order Information</h6>
-                                           
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered">
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="tr-title">Order Date:</td>
-                                                        <td><?= date('m/d/Y H:i', strtotime($order['order_date'])) ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="tr-title">Order Number:</td>
-                                                        <td><?= 'ORN' . $order['order_id'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="tr-title">Order Items:</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#seeOrderItemsModal_<?= $order['order_id'] ?>">
-                                                                View Order Items
-                                                            </button>
-                                                            <?php include 'modals/seeOrderItemsModal.php'; ?>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="tr-title">Total Amount of Order:</td>
-                                                        <td>₱<?= number_format($totalAmount, 2) ?></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td class="tr-title">Order Date:</td>
+                                    <td><?= date('m/d/Y H:i', strtotime($order['order_date'])) ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="tr-title">Order Number:</td>
+                                    <td><?= 'ORN' . $order['order_id'] ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="tr-title">Order Items:</td>
+                                    <td>
+                                        <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#seeOrderItemsModal_<?= $order['order_id'] ?>">
+                                            View Order Items
+                                        </button>
+                                        <?php include 'modals/seeOrderItemsModal.php'; ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tr-title">Total Amount of Order:</td>
+                                    <td>₱<?= number_format($order['total_amount'], 2) ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                <?php
-                                    break; // Exit the loop after displaying the order details
-                                }
-                            } // end of foreach loop
-                        } // end of else (JSON decoding)
-                    } // end of else (data fetched from API)
-                } else {
-                    echo "Order ID is not provided.";
-                } ?>
+
     </div>
 <?php
             }

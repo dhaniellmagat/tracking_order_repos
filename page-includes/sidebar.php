@@ -40,7 +40,7 @@
         <a href="orders.php">Order List</a>
       </li>
       <li>
-        <a href="">Order 2</a>
+        <a href="products.php">Products</a>
       </li>
     </ul>
   </div>

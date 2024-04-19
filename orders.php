@@ -22,49 +22,30 @@ include "page-includes/navbar.php";
                         <th>#</th>
                         <th>Date & Time</th>
                         <th>Order Number</th>
-                        <th>Order Tracking Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                     $RowCount = 0;
-                    try {
-                        require_once 'config/fetch_order_api.php';
 
-                        // Check if data was fetched successfully
-                        if ($dataArray === false) {
-                            throw new Exception("Failed to fetch data from the API.");
-                        } else {
-                            // Loop through each order
-                            foreach ($dataArray as $orderId => $orderInfo) {
-                                $APIorderID =  $orderInfo['order_id'];
-                                $sql_LookOrderNum = "SELECT OrderID FROM tbl_trackinginformation  WHERE OrderID = $APIorderID";
-                                $result = mysqli_query($conn, $sql_LookOrderNum);
-                                $trackingInfo = mysqli_fetch_assoc($result);
+                    $sql_LookOrderNum = "SELECT * FROM orders ORDER BY order_date DESC";
+                    $result = mysqli_query($conn, $sql_LookOrderNum);
 
-                                // Display tracking status
-                                if ($trackingInfo) {
-                                    $trackingStatus = 'Tracked';
-                                } else {
-                                    $trackingStatus = "Untracked";
-                                }
+                    if (mysqli_num_rows($result) > 0) {
+                        // Loop through each row of data
+                        while ($orderInfo = mysqli_fetch_assoc($result)) {
 
                     ?>
-                                <tr>
-                                    <td><?= ++$RowCount ?></td>
-                                    <td><?= date('m/d/Y H:i', strtotime($orderInfo['order_date'])) ?></td>
-                                    <td><?= 'ORN' . $orderInfo['order_id'] ?></td>
-                                    <td>
-                                        <?= $trackingStatus ?>
-                                    </td>
-                                    <td><a type="button" href="order-details.php?id=<?= $orderInfo['order_id'] ?>" class="btn btn-info text-white">View</a></td>
-                                </tr>
+                            <tr>
+                                <td><?= ++$RowCount ?></td>
+                                <td><?= date('m/d/Y H:i', strtotime($orderInfo['order_date'])) ?></td>
+                                <td><?= 'ORN' . $orderInfo['order_id'] ?></td>
+                                <td><a type="button" href="order-details.php?id=<?= $orderInfo['order_id'] ?>" class="btn btn-info text-white">View</a></td>
+                            </tr>
                     <?php }
-                        }
-                    } catch (Exception $e) {
-                        echo '<tr><td colspan="4">' . $e->getMessage() . '</td></tr>';
                     }
+
                     ?>
                 </tbody>
             </table>

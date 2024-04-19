@@ -18,12 +18,12 @@ $result = mysqli_query($conn, $sql_FetchTracks);
 
 <!-- Page content -->
 <div class="main">
-    <?php if (isset($_SESSION['ActivateAlert'])) { ?>
+    <?php if (isset($_SESSION['AlertMsg'])) { ?>
         <div class="alert <?= $_SESSION['AlertColor'] ?> fade show" role="alert">
             <?= $_SESSION['AlertMsg'] ?>
 
         </div>
-    <?php } ?>
+    <?php }$_SESSION['AlertMsg'] ?>
     <div class="container-fluid bg-light p-3 border">
         <h3 class="text-center">Tracking System</h3>
         <div class="row d-flex justify-content-center">
