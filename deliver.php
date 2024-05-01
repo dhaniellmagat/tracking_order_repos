@@ -62,8 +62,7 @@ $result = mysqli_query($conn, $sql_FetchTracks);
                     if (isset($_GET['submit'])) {
                         // Search logic
                         $search = sanitizeInput($_GET['search']);
-                        $sql_FetchTracks .= " WHERE tti.TrackingNumber LIKE '%$search%'
-                                            OR ts.Status LIKE '%$search%' "; // Add more columns as needed
+                        $sql_FetchTracks .= " AND (tti.TrackingNumber LIKE '%$search%' OR ts.Status LIKE '%$search%')";
                     }
                     $result = mysqli_query($conn, $sql_FetchTracks);
 

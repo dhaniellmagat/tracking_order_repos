@@ -13,7 +13,7 @@ function sanitizeInput($input)
 $sql_FetchTracks = "SELECT tti.*, ts.Status 
 FROM tbl_trackinginformation tti
 INNER JOIN tbl_trackingstatus ts ON tti.TrackingStatusID = ts.TrackingStatusID 
-ORDER BY tti.InitialDate DESC";
+";
 $result = mysqli_query($conn, $sql_FetchTracks);
 ?>
 
@@ -55,7 +55,7 @@ $result = mysqli_query($conn, $sql_FetchTracks);
                         $search = sanitizeInput($_GET['search']);
                         $sql_FetchTracks .= " WHERE tti.TrackingNumber LIKE '%$search%'
                                             OR ts.Status LIKE '%$search%'
-                                            OR tti.InitialDate LIKE '%$search%' "; // Add more columns as needed
+                                            OR tti.InitialDate LIKE '%$search%' ORDER BY tti.InitialDate DESC "; // Add more columns as needed
                     }
                     $result = mysqli_query($conn, $sql_FetchTracks);
 
