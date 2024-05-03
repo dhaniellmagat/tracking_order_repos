@@ -10,7 +10,8 @@ include "page-includes/navbar.php";
             <?= $_SESSION['AlertMsg'] ?>
 
         </div>
-    <?php }unset($_SESSION['AlertMsg']); ?>
+    <?php }
+    unset($_SESSION['AlertMsg']); ?>
     <div class="container-fluid p-3 mb-2 border">
 
         <?php
@@ -111,7 +112,14 @@ include "page-includes/navbar.php";
         } ?>
 
         <?php
-        $sql_DisplayOrder = "SELECT oi.*, p.name AS product_name, p.price AS product_price, o.order_date, o.total_amount 
+        $sql_DisplayOrder = "SELECT oi.*,
+         p.name AS product_name,
+         p.price AS product_price,
+         o.order_date, 
+         o.total_amount,
+         c.name AS customer_name,
+         c.address AS customer_address,
+         c.contact_information AS contact_information
         FROM order_item oi
         INNER JOIN product p ON p.product_id = oi.product_id
         INNER JOIN orders o ON o.order_id = oi.order_id
@@ -137,7 +145,13 @@ include "page-includes/navbar.php";
                                 </tr>
                                 <tr>
                                     <td class="tr-title">Order Number:</td>
-                                    <td><?= 'ORN' . $order['order_id'] ?></td>
+                                    <td>
+                                        <a type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#seeCustomerModal_<?= $order['order_id'] ?>">
+                                            <?= 'ORN' . $order['order_id'] ?>
+                                        </a>
+                                        <?php include 'modals/seeCustomerModal.php'; ?>
+                                    </td>
+
                                 </tr>
                                 <tr>
                                     <td class="tr-title">Order Items:</td>
